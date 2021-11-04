@@ -1,0 +1,272 @@
+﻿@page "/tab"
+@using BlazorFluentUI
+@using Microsoft.Extensions.Configuration
+@using System.IO
+@using Microsoft.Graph;
+@using System.Reflection
+@using System.Text.Json
+@inject NavigationManager MyNavigationManager
+@inject IConfiguration Configuration
+@inject IJSRuntime jsRuntime
+
+
+<div class="siteContent">
+    <div class="sectionWrapper">
+        <header class="root">
+            <h1 class="title">Teams Explorer</h1>
+        </header>
+        <div class="section">
+            <div id="overview" tabindex="-1">
+                <h2 class="subHeading hiddenContent">Overview</h2>
+            </div>
+            <div class="content">
+                <div class="ms-Markdown">
+                    <p>
+                        Select a team from the drop-down to see what information is available on the API level of Microsoft Teams.
+                    </p>
+                    <ul>
+                        <li>You only will see information of teams you joined. That's on purpose.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="section" style="transition-delay: 0s;">
+            <div id="overview" tabindex="-1">
+                <h2 class="subHeading">Select a Team</h2>
+                <br />
+                <div>
+                    <Dropdown ItemsSource=@TeamDropdownOptions
+                              OnChange=@OnTeamsSelectChange
+                              Style="width:300px;"
+                              DropdownHeight="150"
+                              DropdownWidth="450" />
+                </div>
+                <br />
+            </div>
+            <div>
+                <div class="subSection">
+                    <Pivot AriaLabel="Basic Pivot Example">
+                        <PivotItem HeaderText="Team">
+                            <PropertyTable Values="@SelectedTeamProps"></PropertyTable>
+                        </PivotItem>
+                        <PivotItem HeaderText="Installed Apps" >
+                            <PropertyTable Values="@InstalledApps"></PropertyTable>
+                        </PivotItem>
+                        <PivotItem HeaderText="Channels" >
+                            <ChannelTable Channels="@Channels" Tabs="@Tabs"></ChannelTable>
+                        </PivotItem>
+                        <PivotItem HeaderText="Members" >
+                            <MemberTable TeamMembers="@Members"></MemberTable>
+                        </PivotItem>
+                    </Pivot>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    TeamsFx teamsfx;
+    string _clientId, _endpoint;
+    FluentSelect Select;
+    public string UserName { get; set; }
+    public string Email { get; set; }
+    public string Title { get; set; }
+    public string UserPhotoUri { get; set; }
+    public bool IsLoading { get; set; }
+
+    GraphServiceClient GraphClient;
+
+    List<Team> _teams;
+    List<IDropdownOption> TeamDropdownOptions;
+    Team _selectedTeam;
+    string SelectedTeamId;
+
+    Dictionary<string, string> SelectedTeamProps = null;
+    Dictionary<string, string> InstalledApps = null;
+    List<AadUserConversationMember> Members = null;
+    List<Channel> Channels = null;
+    Dictionary<string, List<TeamsTab>> Tabs = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                teamsfx = await TeamsFx.CreateTeamsFx(jsRuntime);
+                _clientId = Configuration.GetValue<string>("CLIENT_ID");
+                _endpoint = MyNavigationManager.BaseUri;
+
+                await teamsfx.Init(_clientId, _endpoint, _endpoint);
+
+                GraphClient = teamsfx.GetGraphServiceClient();
+
+                @*                var user = await teamsfx.GetInfoAsync();*@
+
+    _teams = await GetTeams();
+
+                TeamDropdownOptions = _teams.Select(x => new DropdownOption
+                {
+                    Key = x.Id,
+                    Text = x.DisplayName
+                }).Cast<IDropdownOption>().ToList();
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex) { }
+    }
+
+    async Task<List<Team>> GetTeams()
+    {
+        var teams = await GraphClient
+                .Me
+                .JoinedTeams
+                .Request()
+                .GetAsync();
+
+        List<Team> result = (List<Team>)teams.CurrentPage;
+        result.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
+
+        return result;
+    }
+
+    async void OnTeamsSelectChange(DropdownChangeArgs args)
+    {
+        SelectedTeamId = (string)args.Option.Key;
+
+        SelectedTeamProps = await GetTeamDetails(SelectedTeamId);
+        StateHasChanged();
+
+        InstalledApps = await GetInstalledApps(SelectedTeamId);
+        StateHasChanged();
+
+        Members = await GetMembers(SelectedTeamId);
+        StateHasChanged();
+
+        Channels = await GetChannels(SelectedTeamId);
+        Tabs = await GetTabs(SelectedTeamId, Channels);
+        StateHasChanged();
+        int x = 10;
+    }
+
+
+
+    async Task<Dictionary<string, string>> GetTeamDetails(string teamId)
+    {
+        Dictionary<string, string> result = new();
+
+        var team = await GraphClient
+                .Teams[teamId]
+                .Request()
+                .GetAsync();
+        
+        foreach (PropertyInfo p in team.GetType().GetProperties())
+        {
+            var value = p.GetValue(team, null);
+            
+            if(value != null)
+                result.Add(p.Name, JsonSerializer.Serialize(value));
+
+            if (value == null)
+                result.Add(p.Name, "null");            
+        }
+
+        return result;
+    }
+
+    async Task<Dictionary<string, string>> GetInstalledApps(string teamId)
+    {
+        Dictionary<string, string> result = new();
+
+        var apps = await GraphClient
+                .Teams[SelectedTeamId].InstalledApps
+                .Request()
+                .Expand("teamsAppDefinition")
+                .GetAsync();
+        
+        foreach (var app in apps.CurrentPage)
+        {
+            result.Add(app.TeamsAppDefinition.DisplayName + " - " + app.TeamsAppDefinition.TeamsAppId, JsonSerializer.Serialize(app));
+        }
+
+        return result;
+    }
+
+    async Task<List<AadUserConversationMember>> GetMembers(string teamId)
+    {
+        List<AadUserConversationMember> result = new();
+        
+        var members = await GraphClient
+                .Teams[SelectedTeamId].Members
+                .Request()
+                .GetAsync();
+        foreach (AadUserConversationMember member in members.CurrentPage)
+        {
+            result.Add(member);
+        }
+
+        return result;
+    }
+
+    async Task<List<Channel>> GetChannels(string teamdId)
+    {
+        List<Channel> result = new();
+
+        var channels = await GraphClient
+            .Teams[teamdId]
+            .Channels
+            .Request()
+            .GetAsync();
+
+        result = channels.CurrentPage.ToList<Channel>();
+        result.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
+
+        return result;
+    }
+    
+    async Task<Dictionary<string,List<TeamsTab>>> GetTabs(string teamId, List<Channel> channels)
+    {
+        Dictionary<string,List<TeamsTab>> result = new();
+
+        foreach (Channel c in channels)
+        {
+            var tabs = await GraphClient
+                .Teams[teamId]
+                .Channels[c.Id]
+                .Tabs
+                .Request()
+                .GetAsync();
+
+            result.Add(c.Id, tabs.CurrentPage.ToList());
+        }
+
+
+        return result;
+    }
+}
+
+
+
+   @* async void OnTeamsDropDownChange(object team)
+    {
+        Team selectedTeam = (Team)team;
+
+        _selectedTeam = selectedTeam;
+
+        var graphClient = teamsfx.GetGraphServiceClient();
+
+        var channels = await graphClient
+            .Teams[selectedTeam.Id]
+            .Channels
+            .Request()
+            .GetAsync();
+
+        List<Channel> result = channels.CurrentPage.ToList<Channel>();
+        result.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
+        //_channels = result;
+
+        StateHasChanged();
+    }*@

@@ -1,0 +1,78 @@
+﻿@using BlazorFluentUI.Lists
+@using Microsoft.Graph;
+@using System.Text.Json
+
+@if(TeamMembers!=null && TeamMembers.Count>0)
+{
+    <div>
+        <br />
+    <table>
+        <thead>
+            <tr>
+                <th class="displayname">Display Name</th>
+                <th class="role">Role</th>
+                <th class="details">Details</th>
+            </tr>
+        </thead>
+        @foreach(var m in TeamMembers)
+        {
+            <tr>
+                <td class="displayname">@m.DisplayName</td>
+                <td class="role">@JsonSerializer.Serialize(m.Roles)</td>
+                <td class="details">@JsonSerializer.Serialize(m)</td>
+            </tr>
+        }
+    </table>
+    </div>
+
+   @* <DetailsList ItemsSource=@ListItems
+         Columns=@Columns
+         GetKey=@(item=>item.Key)
+         LayoutMode="DetailsListLayoutMode.Justified"
+         TItem="PropertyItem"
+         SelectionMode="SelectionMode.None">
+    </DetailsList>*@
+}
+
+
+
+@code {
+
+    [Parameter]
+    public System.Collections.Generic.List<AadUserConversationMember> TeamMembers { get; set; }
+    
+    System.Collections.Generic.List<PropertyItem> ListItems = new();
+    System.Collections.Generic.List<IDetailsRowColumn<PropertyItem>> Columns = new();
+    Selection<PropertyItem> SelectedItem = new();
+    protected override void OnParametersSet()
+    {
+        
+
+    }
+@*
+    protected override Task OnParametersSetAsync()
+    {
+        try
+        {            
+            if (Values != null && Values.Count > 0)
+            {
+                foreach (KeyValuePair<string, string> p in Values)
+                {
+                    ListItems.Add(new PropertyItem() { Key = p.Key, Value = p.Value });
+                }
+              SelectedItem.GetKey = (item => item.Key);
+                Columns.Add(new DetailsRowColumn<PropertyItem>("Property", x => x.Key) { Index = 0 });
+                Columns.Add(new DetailsRowColumn<PropertyItem>("Value", x => x.Value) { Index = 1 });
+            }
+            StateHasChanged();
+        }
+        catch(Exception ex){}
+        return base.OnParametersSetAsync();
+    }*@
+
+    class PropertyItem
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
+}

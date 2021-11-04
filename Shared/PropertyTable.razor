@@ -1,0 +1,74 @@
+﻿@using BlazorFluentUI.Lists
+
+@if(Values!=null && Values.Count>0)
+{
+    <div>
+        <br />
+    <table>
+        <thead>
+            <tr>
+                <th class="property">Name</th>
+                <th class="value">Value</th>
+            </tr>
+        </thead>
+        @foreach(KeyValuePair<string, string> entry in Values)
+        {
+            <tr>
+                <td class="property">@entry.Key</td>
+                <td class="value">@entry.Value</td>
+            </tr>
+        }
+    </table>
+    </div>
+
+   @* <DetailsList ItemsSource=@ListItems
+         Columns=@Columns
+         GetKey=@(item=>item.Key)
+         LayoutMode="DetailsListLayoutMode.Justified"
+         TItem="PropertyItem"
+         SelectionMode="SelectionMode.None">
+    </DetailsList>*@
+}
+
+
+
+@code {
+
+    [Parameter]
+    public Dictionary<string,string> Values { get; set; }
+
+    System.Collections.Generic.List<PropertyItem> ListItems = new();
+    System.Collections.Generic.List<IDetailsRowColumn<PropertyItem>> Columns = new();
+    Selection<PropertyItem> SelectedItem = new();
+    protected override void OnParametersSet()
+    {
+        
+
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        try
+        {            
+            if (Values != null && Values.Count > 0)
+            {
+                foreach (KeyValuePair<string, string> p in Values)
+                {
+                    ListItems.Add(new PropertyItem() { Key = p.Key, Value = p.Value });
+                }
+@*                SelectedItem.GetKey = (item => item.Key);
+                Columns.Add(new DetailsRowColumn<PropertyItem>("Property", x => x.Key) { Index = 0 });
+                Columns.Add(new DetailsRowColumn<PropertyItem>("Value", x => x.Value) { Index = 1 });*@
+            }
+            StateHasChanged();
+        }
+        catch(Exception ex){}
+        return base.OnParametersSetAsync();
+    }
+
+    class PropertyItem
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
+}
