@@ -1,5 +1,4 @@
-﻿@using BlazorFluentUI.Lists
-@using Microsoft.Graph
+﻿@using Microsoft.Graph
 @using System.Text.Json
 
 @if(Channels!=null && Channels.Count>0)
@@ -36,13 +35,6 @@
     </table>
     </div>
 
-   @* <DetailsList ItemsSource=@ListItems
-         Columns=@Columns
-         GetKey=@(item=>item.Key)
-         LayoutMode="DetailsListLayoutMode.Justified"
-         TItem="PropertyItem"
-         SelectionMode="SelectionMode.None">
-    </DetailsList>*@
 }
 
 
@@ -50,9 +42,9 @@
 @code {
 
     [Parameter]
-    public System.Collections.Generic.List<Channel> Channels { get; set; }
+    public List<Channel> Channels { get; set; }
 
     [Parameter]
-    public Dictionary<string, System.Collections.Generic.List<TeamsTab>> Tabs { get; set; }
+    public Dictionary<string, List<TeamsTab>> Tabs { get; set; }
     
 }

@@ -69,18 +69,11 @@
 @code {
     TeamsFx teamsfx;
     string _clientId, _endpoint;
-    FluentSelect Select;
-    public string UserName { get; set; }
-    public string Email { get; set; }
-    public string Title { get; set; }
-    public string UserPhotoUri { get; set; }
-    public bool IsLoading { get; set; }
 
     GraphServiceClient GraphClient;
 
-    List<Team> _teams;
+    List<Team> JoinedTeams;
     List<IDropdownOption> TeamDropdownOptions;
-    Team _selectedTeam;
     string SelectedTeamId;
 
     Dictionary<string, string> SelectedTeamProps = null;
@@ -101,13 +94,11 @@
 
                 await teamsfx.Init(_clientId, _endpoint, _endpoint);
 
-                GraphClient = teamsfx.GetGraphServiceClient();
+                GraphClient = teamsfx.GetGraphServiceClient();                
 
-                @*                var user = await teamsfx.GetInfoAsync();*@
+                JoinedTeams = await GetTeams();
 
-    _teams = await GetTeams();
-
-                TeamDropdownOptions = _teams.Select(x => new DropdownOption
+                TeamDropdownOptions = JoinedTeams.Select(x => new DropdownOption
                 {
                     Key = x.Id,
                     Text = x.DisplayName
@@ -148,8 +139,7 @@
 
         Channels = await GetChannels(SelectedTeamId);
         Tabs = await GetTabs(SelectedTeamId, Channels);
-        StateHasChanged();
-        int x = 10;
+        StateHasChanged();      
     }
 
 
@@ -189,7 +179,8 @@
         
         foreach (var app in apps.CurrentPage)
         {
-            result.Add(app.TeamsAppDefinition.DisplayName + " - " + app.TeamsAppDefinition.TeamsAppId, JsonSerializer.Serialize(app));
+            string name = app.TeamsAppDefinition.DisplayName + " - " + app.TeamsAppDefinition.TeamsAppId;
+            result.Add(name, JsonSerializer.Serialize(app));
         }
 
         return result;
@@ -203,6 +194,7 @@
                 .Teams[SelectedTeamId].Members
                 .Request()
                 .GetAsync();
+
         foreach (AadUserConversationMember member in members.CurrentPage)
         {
             result.Add(member);
@@ -243,30 +235,6 @@
             result.Add(c.Id, tabs.CurrentPage.ToList());
         }
 
-
         return result;
     }
 }
-
-
-
-   @* async void OnTeamsDropDownChange(object team)
-    {
-        Team selectedTeam = (Team)team;
-
-        _selectedTeam = selectedTeam;
-
-        var graphClient = teamsfx.GetGraphServiceClient();
-
-        var channels = await graphClient
-            .Teams[selectedTeam.Id]
-            .Channels
-            .Request()
-            .GetAsync();
-
-        List<Channel> result = channels.CurrentPage.ToList<Channel>();
-        result.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
-        //_channels = result;
-
-        StateHasChanged();
-    }*@
