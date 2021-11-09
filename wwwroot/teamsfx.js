@@ -28,3 +28,18 @@ export async function popupLoginPage() {
     await credential.login(scope);
     return;
 }
+
+export function getContext() {
+
+    microsoftTeams.initialize();
+
+    return new Promise((resolve, reject) => {
+        try {
+            microsoftTeams.getContext((context) => {
+                resolve(context);
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+}

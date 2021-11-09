@@ -12,7 +12,7 @@
 
 <div class="siteContent">
     <div class="sectionWrapper">
-        <header class="root">
+      @*  <header class="root">
             <h1 class="title">Teams Explorer</h1>
         </header>
         <div class="section">
@@ -29,7 +29,7 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </div>*@
         <div class="section" style="transition-delay: 0s;">
             <div id="overview" tabindex="-1">
                 <h2 class="subHeading">Select a Team</h2>
@@ -58,6 +58,9 @@
                         <PivotItem HeaderText="Members" >
                             <MemberTable TeamMembers="@Members"></MemberTable>
                         </PivotItem>
+                        <PivotItem HeaderText="Current Context" >
+                            <PropertyTable Values="@ContextProperties"></PropertyTable>
+                        </PivotItem>
                     </Pivot>
                 </div>
             </div>
@@ -81,6 +84,8 @@
     List<AadUserConversationMember> Members = null;
     List<Channel> Channels = null;
     Dictionary<string, List<TeamsTab>> Tabs = null;
+    Dictionary<string, string> ContextProperties = null;
+    
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -103,6 +108,8 @@
                     Key = x.Id,
                     Text = x.DisplayName
                 }).Cast<IDropdownOption>().ToList();
+
+                
 
                 StateHasChanged();
             }
@@ -135,6 +142,9 @@
         StateHasChanged();
 
         Members = await GetMembers(SelectedTeamId);
+        StateHasChanged();
+
+        ContextProperties = await GetContextProperties();
         StateHasChanged();
 
         Channels = await GetChannels(SelectedTeamId);
@@ -181,6 +191,26 @@
         {
             string name = app.TeamsAppDefinition.DisplayName + " - " + app.TeamsAppDefinition.TeamsAppId;
             result.Add(name, JsonSerializer.Serialize(app));
+        }
+
+        return result;
+    }
+
+    async Task<Dictionary<string, string>> GetContextProperties()
+    {
+        Dictionary<string, string> result = new();
+
+        Context ctx = await teamsfx.GetContext();
+
+        foreach (PropertyInfo p in ctx.GetType().GetProperties())
+        {
+            var value = p.GetValue(ctx, null);
+            
+            if(value != null)
+                result.Add(p.Name, JsonSerializer.Serialize(value));
+
+            if (value == null)
+                result.Add(p.Name, "null");            
         }
 
         return result;
@@ -237,4 +267,5 @@
 
         return result;
     }
+
 }

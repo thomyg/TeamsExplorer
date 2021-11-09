@@ -77,6 +77,11 @@ namespace TeamsExplorer
             return token;
         }
 
+        public async Task<Context> GetContext()
+        {                
+                return await module.InvokeAsync<Context>("getContext").ConfigureAwait(false);
+        }
+
         public async Task LoadTabConfigJS()
         {
             await jsRuntime.InvokeVoidAsync("eval", "document.getElementById('tab config').appendChild(Object.assign(document.createElement('script'),{src: './tabconfig.js' })); ");
