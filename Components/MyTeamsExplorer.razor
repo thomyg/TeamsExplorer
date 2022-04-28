@@ -1,0 +1,74 @@
+﻿
+@inject MicrosoftTeams MicrosoftTeams
+@inject IWebHostEnvironment HostEnvironment
+@inject IConfiguration Configuration
+@inject NotificationService NotificationService
+@inject DataService DataService
+
+<div>
+    <RadzenCard>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <h1>Select a Team</h1>
+                    <div>
+                        <RadzenDropDown TValue="Microsoft.Graph.Team" Data="@JoinedTeams" TextProperty="DisplayName"
+                                        ValueProperty="ID" Change=@(team => OnTeamsSelectChange(team))>
+                        </RadzenDropDown>
+                    </div>
+                    <br />
+                </div>
+                <div class="col">
+                    <Parker></Parker>
+                </div>
+            </div>
+        </div>
+        <div>
+            @if (noTeamSelected == false)
+            {
+                <div class="subSection">
+                    <RadzenTabs style="width: 1700px;" RenderMode="TabRenderMode.Client">
+                        <Tabs>
+                            <RadzenTabsItem Text="Team">
+                                <PropertyTable Values="@SelectedTeamProps"></PropertyTable>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Installed Apps">
+                                <PropertyTable Values="@InstalledApps"></PropertyTable>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Channels">
+                                <ChannelTable Channels="@Channels" Tabs="@Tabs"></ChannelTable>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Members">
+                                <MemberTable TeamMembers="@Members"></MemberTable>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="Current Context">
+                                <PropertyTable Values="@ContextProperties"></PropertyTable>
+                            </RadzenTabsItem>
+                            @if (showSPOData)
+                            {
+                                <RadzenTabsItem Text="SPO Site Properties">
+                                    <PropertyTable Values="@SiteProperties"></PropertyTable>
+                                </RadzenTabsItem>
+                                <RadzenTabsItem Text="SPO Web Properties">
+                                    <PropertyTable Values="@WebProperties"></PropertyTable>
+                                </RadzenTabsItem>
+                            }
+                        </Tabs>
+                    </RadzenTabs>
+                </div>
+            }
+            else
+            {
+                <div>Please select a Team from the DropDown.</div>
+            }
+        </div>
+    </RadzenCard>
+</div>
+
+
+
+@code {
+
+
+
+}

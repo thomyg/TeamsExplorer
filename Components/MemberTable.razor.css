@@ -1,0 +1,27 @@
+﻿table {
+    table-layout: fixed;
+    width: 100%;
+    border: 0px solid #000000;
+    border-spacing: 0 1em;
+}
+
+td {
+    word-wrap: break-word;
+    border-bottom: 1px solid #f3f2f1;
+    padding-bottom: 1em;
+}
+
+thead {
+    text-align: left;
+}
+
+.displayname {
+    width: 15%;    
+}
+
+.role{
+    width: 15%;
+}
+.details {
+    width: 70%;
+}

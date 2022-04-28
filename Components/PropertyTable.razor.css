@@ -1,0 +1,28 @@
+﻿table {
+    table-layout: fixed;
+    width: 100%;
+    border: 0px solid #000000;
+    border-spacing: 0 1em;
+}
+
+
+td {
+    word-wrap: break-word;
+    border-bottom: 1px solid #f3f2f1;
+    padding-bottom: 1em;
+}
+
+thead {
+    text-align:left;
+}
+
+.property {
+    width: 25%;
+}
+.value {
+    width: 75%;
+}
+
+.highlight {
+    font-weight: bold;
+}

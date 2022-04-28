@@ -1,0 +1,42 @@
+﻿
+@if (Values != null && Values.Count > 0)
+{
+    <div>
+        <br />
+        <table>
+            <thead>
+                <tr>
+                    <th class="property">Name</th>
+                    <th class="value">Value</th>
+                </tr>
+            </thead>
+            @foreach (KeyValuePair<string, string> entry in Values)
+            {
+                <tr>
+                    @if (entry.Key.ToLower().Equals("id"))
+                    {
+                        <td class="property"><b>@entry.Key</b></td>
+                        <td class="value"><b>@entry.Value</b></td>
+                    }
+                    else
+                    {
+                        <td class="property">@entry.Key</td>
+                        <td class="value">@entry.Value</td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+
+}
+else
+{
+    <Spinner></Spinner>
+}
+
+@code {
+
+    [Parameter]
+    public Dictionary<string, string> Values { get; set; }
+
+}

@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>a28f406a-c8a2-42ac-9846-31df4712341e</UserSecretsId>
+	<ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\Tab.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\Tab.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\site.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectCapability Include="TeamsFx" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Graph" Version="4.20.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="1.2.0" />
+		<PackageReference Include="Microsoft.TeamsFx" Version="0.4.1-rc" />
+		<PackageReference Include="PnP.Core" Version="1.6.0" />
+		<PackageReference Include="PnP.Core.Auth" Version="1.6.0" />
+		<PackageReference Include="Radzen.Blazor" Version="3.17.2" />
+	</ItemGroup>
+
+  <ItemGroup>
+	  <Using Include="Azure.Core"/>
+	  <Using Include="Microsoft.Extensions.Configuration"/>
+	  <Using Include="System.IO"/>
+	  <Using Include="Microsoft.Graph"/>
+	  <Using Include="System.Reflection"/>
+	  <Using Include="System.Text.Json"/>
+	  <Using Include="Microsoft.AspNetCore.Hosting"/>
+	  <Using Include="Microsoft.Extensions.Hosting"/>
+	  <Using Include="Microsoft.TeamsFx"/>
+	  <Using Include="Microsoft.TeamsFx.Model"/>
+	  <Using Include="TeamsExplorer.Interop.TeamsSDK"/>
+	  <Using Include="PnP.Core.Auth.Services"/>
+	  <Using Include="PnP.Core.Services"/>
+	  <Using Include="Radzen"/>
+	  <Using Include="TeamsExplorer.Data"/>
+	  <Using Include="PnP.Core.Auth.Services.Builder.Configuration"/>
+	  <Using Include="PnP.Core.Services.Builder.Configuration"/>
+  </ItemGroup>
+
+</Project>

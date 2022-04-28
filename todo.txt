@@ -1,0 +1,5 @@
+﻿
+
+# outsource code to cs file from teams explorer
+
+# update Auth to latest teamsfx library
