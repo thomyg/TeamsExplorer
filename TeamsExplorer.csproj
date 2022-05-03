@@ -34,23 +34,24 @@
 	</ItemGroup>
 
   <ItemGroup>
-	  <Using Include="Azure.Core"/>
-	  <Using Include="Microsoft.Extensions.Configuration"/>
-	  <Using Include="System.IO"/>
-	  <Using Include="Microsoft.Graph"/>
-	  <Using Include="System.Reflection"/>
-	  <Using Include="System.Text.Json"/>
-	  <Using Include="Microsoft.AspNetCore.Hosting"/>
-	  <Using Include="Microsoft.Extensions.Hosting"/>
-	  <Using Include="Microsoft.TeamsFx"/>
-	  <Using Include="Microsoft.TeamsFx.Model"/>
-	  <Using Include="TeamsExplorer.Interop.TeamsSDK"/>
-	  <Using Include="PnP.Core.Auth.Services"/>
-	  <Using Include="PnP.Core.Services"/>
-	  <Using Include="Radzen"/>
-	  <Using Include="TeamsExplorer.Data"/>
-	  <Using Include="PnP.Core.Auth.Services.Builder.Configuration"/>
-	  <Using Include="PnP.Core.Services.Builder.Configuration"/>
+	  <Using Include="Azure.Core" />
+	  <Using Include="Microsoft.Extensions.Configuration" />
+	  <Using Include="System.IO" />
+	  <Using Include="Microsoft.Graph" />
+	  <Using Include="System.Reflection" />
+	  <Using Include="System.Text.Json" />
+	  <Using Include="Microsoft.AspNetCore.Hosting" />
+	  <Using Include="Microsoft.AspNetCore.Components" />
+	  <Using Include="Microsoft.Extensions.Hosting" />
+	  <Using Include="Microsoft.TeamsFx" />
+	  <Using Include="Microsoft.TeamsFx.Model" />
+	  <Using Include="TeamsExplorer.Interop.TeamsSDK" />
+	  <Using Include="PnP.Core.Auth.Services" />
+	  <Using Include="PnP.Core.Services" />
+	  <Using Include="Radzen" />
+	  <Using Include="TeamsExplorer.Data" />
+	  <Using Include="PnP.Core.Auth.Services.Builder.Configuration" />
+	  <Using Include="PnP.Core.Services.Builder.Configuration" />
   </ItemGroup>
 
 </Project>

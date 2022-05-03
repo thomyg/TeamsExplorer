@@ -1,6 +1,4 @@
 ﻿
-using Radzen.Blazor;
-
 namespace TeamsExplorer.Components;
 
 public partial class MyTeamsExplorer
@@ -10,6 +8,17 @@ public partial class MyTeamsExplorer
     string SelectedTeamId;
     bool showSPOData = false;        
     bool noTeamSelected = true;
+
+    [Inject]
+    NotificationService NotificationService { get; set; }
+    [Inject]
+    MicrosoftTeams MicrosoftTeams { get; set; }
+    [Inject]
+    IWebHostEnvironment HostEnvironment { get; set; }
+    [Inject]
+    IConfiguration Configuration { get; set; }
+    [Inject]
+    DataService DataService { get; set; }
 
     List<Team> JoinedTeams = new List<Team>();
     Dictionary<string, string> SelectedTeamProps;
@@ -24,6 +33,7 @@ public partial class MyTeamsExplorer
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        // Get configuration value to modify HTML in order to include SharePoint data or not
         showSPOData = Convert.ToBoolean(Configuration["TeamsExplorer:ShowSPOData"]);
     }
 
@@ -38,6 +48,8 @@ public partial class MyTeamsExplorer
             {
                 isInTeams = await MicrosoftTeams.IsInTeams();
 
+                // Get joined teams of the user and load them into the dropdown
+                // From here the dropdown drives the app behaviour with its change events
                 JoinedTeams = await DataService.GetTeams();
                 ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Teams Summary", Detail = "Successfully got data from " + JoinedTeams.Count + " teams.", Duration = 4000 });
                 StateHasChanged();
@@ -61,6 +73,7 @@ public partial class MyTeamsExplorer
             Team selectedTeam = (Team)team;
             SelectedTeamId = selectedTeam.Id;
 
+            // Getting all the Graph data
             SelectedTeamProps = await DataService.GetTeamDetails(SelectedTeamId);
             InstalledApps = await DataService.GetInstalledApps(SelectedTeamId);
             Members = await DataService.GetMembers(SelectedTeamId);
@@ -72,6 +85,7 @@ public partial class MyTeamsExplorer
 
             if (showSPOData)
             {
+                // If configuration is showSPOData=true also query SPO properties
                 SiteProperties = await DataService.GetSiteProperties(SelectedTeamId);                
                 WebProperties = await DataService.GetWebProperties(SelectedTeamId);
                 StateHasChanged();

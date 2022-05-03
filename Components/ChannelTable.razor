@@ -1,6 +1,4 @@
-﻿@using Microsoft.Graph
-@using System.Text.Json
-
+﻿
 @if(Channels!=null && Channels.Count>0 && Tabs!=null && Tabs.Count>0)
 {
     <div>
@@ -44,11 +42,5 @@ else
 
 
 @code {
-
-   @* [Parameter]
-    public List<Channel> Channels { get; set; }
-
-    [Parameter]
-    public Dictionary<string, List<TeamsTab>> Tabs { get; set; }*@
     
 }

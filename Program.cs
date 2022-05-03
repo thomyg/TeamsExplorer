@@ -16,7 +16,7 @@ builder.Services.Configure<PnPCoreOptions>(builder.Configuration.GetSection("PnP
 builder.Services.AddPnPCoreAuthentication();
 builder.Services.Configure<PnPCoreAuthenticationOptions>(builder.Configuration.GetSection("PnPCore"));
 
-//Add our own service for calling Graph and PnPCore
+// Add our own service for calling Graph and PnPCore
 builder.Services.AddScoped<DataService>();
 
 builder.Services.AddControllers();
